@@ -24,6 +24,7 @@ Do[
  sampleOrder = s;                                           (*sample order, s from 1 to 2000*)
 w2plotMatrix =  ConstantArray[0, {numberOfNP, 8}]; (*initial spin flip for one sampled atom*)
 length = (Range[numberOfNP])/numberOfNP;
+
 Do[len = length[[m]];
  Do[Iwire = IwireList[[j]];
   PflipCQD4 = 0;
@@ -59,7 +60,7 @@ DfInitial = Max[f1'[tau2] /. sparam1] , {q, 1, tN - 1}];
 getFfinal =  Mean[fList[[tN - 187 ;; tN - 1, j]]];                  		  (*average f*)
 thetaE = Re[2 ArcSin[getFfinal]];           		(*calculate the polar angle of mu_n*)
 getCQDflipover = Evaluate[(Sign[thetaE - thn] + 1)/2];        (*Branching condition Eq. (1)*)
-PflipCQD4 =  getCQDflipover + PflipCQD4;           
+PflipCQD4 =  getCQDflipover + PflipCQD4, {i, 1, n}];           
 pCQD4List[[j]] = PflipCQD4/n*100;              				  (*probability in %*)
 , {j, 1, 8}];
 w2plotMatrix[[m]] = pCQD4List, {m, 1, numberOfNP}];
