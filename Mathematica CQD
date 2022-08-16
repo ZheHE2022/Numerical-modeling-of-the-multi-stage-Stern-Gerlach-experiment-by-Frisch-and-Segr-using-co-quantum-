@@ -14,7 +14,7 @@ Br = Hrgauss*1.*^-4;                         			   (*remnant magnetic field*)
 tN = 2051;                       (*2051 time sequence;20000 for plotting the smooth sequence*)
 pCQD4List = ConstantArray[0, 8];                        			    (*se simulation*)
 S = 2000;                                                             (*number of sampling*)
-
+numberOfNP = 1; n = 1; 							(*Usually they are 1*)
 taumin = -30;                                                   (*dimensionless time start*)
 taumax = 60;                                                       (*dimensionless time end*)
 tauList =  taumin + Range[tN]/tN*(taumax - taumin);            		     (*time sequency*)
