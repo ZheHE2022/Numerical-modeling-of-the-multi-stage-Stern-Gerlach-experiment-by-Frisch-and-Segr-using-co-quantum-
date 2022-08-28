@@ -13,7 +13,7 @@ Hrgauss = 0.42;
 Br = Hrgauss*1.*^-4;	(*remnant magnetic field*)
 tN = 2051;	(*2051 time sequence;20000 for plotting the smooth sequence*)
 pCQD4List = ConstantArray[0, 8];	(*accumulated flipped spins*)
-S = 2000;	(*number of sampling*)
+S = 2000;	(*number of samplings*)
 numberOfNP = 1; n = 1;	(*usually they are 1*)
 taumin = -30;	(*dimensionless time start*)
 taumax = 60;	(*dimensionless time end*)
@@ -21,14 +21,14 @@ tauList =  taumin + Range[tN]/tN*(taumax - taumin);	(*time sequence*)
 SEListManual = ConstantArray[0, {S, 8}];	(*initialize the spin flip*)
 fList = ConstantArray[0, {tN - 1, 8}];	(*initialize the time sequence*)
 Do[
- sampleOrder = s;	(*sample order, s from 1 to 2000*)
-w2plotMatrix =  ConstantArray[0, {numberOfNP, 8}];	(*initial spin flip for one sampled atom*)
+sampleOrder = s;	(*sample order, s from 1 to 2000*)
+w2plotMatrix = ConstantArray[0, {numberOfNP, 8}];	(*initial spin flip for one sampled atom*)
 length = (Range[numberOfNP])/numberOfNP;
 
 Do[len = length[[m]];
- Do[Iwire = IwireList[[j]];
-  PflipCQD4 = 0;
-  Do[thn = 2*ArcSin[(RandomReal[])^(1/4)]; 
+Do[Iwire = IwireList[[j]];
+PflipCQD4 = 0;
+Do[thn = 2*ArcSin[(RandomReal[])^(1/4)]; 
 (*sample polar angle of the nuclear magnetic moment, the example is the anisotropic distribution*)
 phia = RandomReal[]*2 Pi;	(*azimuthal angle mu_n*)
 G = 2 Pi (Br)^2/(m0* Iwire);	(*G quadrupole gradient*)
@@ -36,24 +36,24 @@ k0 = Abs[gammae]*za^2/v* G;	(*k0*)
 k1 = Abs[gammae]*(Bn Sin[thn])^2/(G v);	(*k1*)
 \[Alpha] =  1/2*Sqrt[Abs[gammae ] G v];	(*ratio between time and dimensionless time*)
 tNP = Bn Cos[thn]/(G v);	(*time when atom reaches the null point*)
-fInitial = 1;	(*inital condition*)
-DfInitial = 0;	(*inital condition *)
+fInitial = 1;	(*initial condition*)
+DfInitial = 0;	(*initial condition *)
 Do[
- tau1 = tauList[[q]];	(*time step q*)
- tau2 = tauList[[q + 1]];	(*time step q+1*)
- \[Omega]n =   Abs[gamman]*Be;	(*precession frequency of mu_n*)
- wn = \[Omega]n /\[Alpha];	(*dimensionless precession frequency*)
+tau1 = tauList[[q]];	(*time step q*)
+tau2 = tauList[[q + 1]];	(*time step q+1*)
+\[Omega]n =   Abs[gamman]*Be;	(*precession frequency of mu_n*)
+wn = \[Omega]n /\[Alpha];	(*dimensionless precession frequency*)
 phin = wn*tau + phia;	(*azimuthal angle of mu_n*)
 sparam1 = NDSolve[{
 f1''[tau] == ((Sqrt[k1] wn / (I Sqrt[k1] + Sqrt[k0] Exp[I (phin)])) + 
- 4 I (tau)) f1'[tau] - (k1 + k0 + 2 Sqrt[k0 k1] Sin[phin]) f1[tau],
- f1[tau1] == fInitial, f1'[tau1] == DfInitial},
-   f1,
-   {tau, tau1, tau2},
- Method -> Automatic,
- PrecisionGoal -> 10,
- AccuracyGoal -> 10, InterpolationOrder -> All, 
- WorkingPrecision -> MachinePrecision, MaxSteps -> Infinity];	(*Schrodinger equation*)
+4 I (tau)) f1'[tau] - (k1 + k0 + 2 Sqrt[k0 k1] Sin[phin]) f1[tau],
+f1[tau1] == fInitial, f1'[tau1] == DfInitial},
+  f1,
+  {tau, tau1, tau2},
+Method -> Automatic,
+PrecisionGoal -> 10,
+AccuracyGoal -> 10, InterpolationOrder -> All, 
+WorkingPrecision -> MachinePrecision, MaxSteps -> Infinity];	(*Schrodinger equation*)
 fList[[q, j]] = Max[Abs@f1[tau1] /. sparam1];	(*time sequence at q’s step for j’s current*)
 fInitial = Max[f1[tau2] /. sparam1];
 DfInitial = Max[f1'[tau2] /. sparam1], {q, 1, tN - 1}];
@@ -70,6 +70,6 @@ SEListManual[[sampleOrder + 1, All]] = w2plotMatrix[[fileOrder]];
 
 (*Plot*)
 SEresults = 
- ListLogLinearPlot[Transpose@{IwireList, (Mean[SEListManual])}, 
- PlotLegends -> {"SE Results"}, PlotStyle -> Blue, 
- PlotMarkers -> "O", Joined -> True];
+ListLogLinearPlot[Transpose@{IwireList, (Mean[SEListManual])}, 
+PlotLegends -> {"SE Results"}, PlotStyle -> Blue, 
+PlotMarkers -> "O", Joined -> True];
